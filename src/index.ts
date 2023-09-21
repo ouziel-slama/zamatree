@@ -41,8 +41,9 @@ const getPairIndex = (index: number) => {
 }
 
 const getBrother = (index: number, hash_list: any[]) => {
-    if (index % 2 === 0) return hash_list[index + 1];
-    return hash_list[index - 1];
+    const brotherIndex = index % 2 === 0 ? index + 1 : index - 1;
+    const brotherHash = hash_list[brotherIndex];
+    return [brotherHash, brotherIndex];
 }
 
 const getUncles = (index: number, hash_list: any[], uncles: any[]) => {
@@ -53,12 +54,12 @@ const getUncles = (index: number, hash_list: any[], uncles: any[]) => {
     return getUncles(pair_index, level_above, uncles);
 }
 
-const merkleRoot = (leafs: any[]) => {
+const getMerkleRoot = (leafs: any[]) => {
     const hash_list = leafs.map(hashValue);
     return reduceHashList(hash_list);
 }
 
-const merkleProof = (leafs: any[], index: number) => {
+const getMerkleProof = (leafs: any[], index: number) => {
     const hash_list = leafs.map(hashValue);
     var proof = [];
     proof.push(getBrother(index, hash_list));
@@ -66,8 +67,20 @@ const merkleProof = (leafs: any[], index: number) => {
     return proof;
 }
 
+const verifyProof = (leaf: string, merkleRoot: string, proof: any[]) => {
+    var leafHash = hashValue(leaf);
+    for (let i = 0; i < proof.length; i++) {
+        const [proofHash, index] = proof[i];
+        const pair = index % 2 === 0 ? [proofHash, leafHash] : [leafHash, proofHash];
+        leafHash = hashPair(pair);
+    }
+    return leafHash === merkleRoot;
+}
+
 const leafs = ['a', 'b', 'c', 'd'];
-const root = merkleRoot(leafs);
-const proof = merkleProof(leafs, 1);
+const root = getMerkleRoot(leafs);
+const proof = getMerkleProof(leafs, 0);
+const verified = verifyProof('a', root, proof);
+console.log(verified);
 console.log(root);
 console.log(proof);
