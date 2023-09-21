@@ -2,8 +2,8 @@
 import createKeccakHash = require('keccak');
 
 type HashPairType = [string, string];
-type BrotherType = [string, number];
-type ProofType = BrotherType[];
+type IndexedHashType = [string, number];
+type ProofType = IndexedHashType[];
 
 const sliceInPairs = (arr: string[]): HashPairType[] => {
     const result = [];
@@ -41,7 +41,7 @@ const getPairIndex = (index: number): number => {
     return (index - 1) / 2;
 }
 
-const getBrother = (index: number, hash_list: string[]): BrotherType => {
+const getBrother = (index: number, hash_list: string[]): IndexedHashType => {
     const brotherIndex = index % 2 === 0 ? index + 1 : index - 1;
     const brotherHash = hash_list[brotherIndex];
     return [brotherHash, brotherIndex];
