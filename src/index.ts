@@ -1,7 +1,11 @@
 
 import createKeccakHash = require('keccak');
 
-const sliceInPairs = (arr: any[]) => {
+type HashPairType = [string, string];
+type BrotherType = [string, number];
+type ProofType = BrotherType[];
+
+const sliceInPairs = (arr: string[]): HashPairType[] => {
     const result = [];
     for (let i = 0; i < arr.length; i += 2) {
         result.push(arr.slice(i, i + 2));
@@ -9,44 +13,41 @@ const sliceInPairs = (arr: any[]) => {
     return result;
 }
 
-const hashValue = (value: string) => {
-    const hash = createKeccakHash('keccak256')
-    hash.update(value);
-    return hash.digest('hex');
+const hashValue = (value: string): string => {
+    return createKeccakHash('keccak256').update(value).digest('hex');
 }
 
-const hashPair = (pair: any[]) => {
+const hashPair = (pair: HashPairType) => {
     const [a, b] = pair;
     if (b === undefined) return a;
     return hashValue(a + b);
 }
 
-const hashListByPairs = (hash_list: any[]) => {
-    if (hash_list.length === 1) return hash_list[0];
+const hashListByPairs = (hash_list: string[]): string[] => {
+    if (hash_list.length === 1) return hash_list;
     const pairs = sliceInPairs(hash_list);
     return pairs.map(hashPair);
 }
 
-const reduceHashList = (hash_list: any[]) => {
-    console.log(hash_list);
+const reduceHashList = (hash_list: string[]): string => {
     if (hash_list.length === 1) return hash_list[0];
     const level_above = hashListByPairs(hash_list);
     return reduceHashList(level_above);
 }
 
-const getPairIndex = (index: number) => {
+const getPairIndex = (index: number): number => {
     if (index <= 1) return 0;
     if (index % 2 === 0) return index /  2;
     return (index - 1) / 2;
 }
 
-const getBrother = (index: number, hash_list: any[]) => {
+const getBrother = (index: number, hash_list: string[]): BrotherType => {
     const brotherIndex = index % 2 === 0 ? index + 1 : index - 1;
     const brotherHash = hash_list[brotherIndex];
     return [brotherHash, brotherIndex];
 }
 
-const getUncles = (index: number, hash_list: any[], uncles: any[]) => {
+const getUncles = (index: number, hash_list: string[], uncles: ProofType): ProofType => {
     if (hash_list.length == 2) return uncles;
     const pair_index = getPairIndex(index);
     const level_above = hashListByPairs(hash_list);
@@ -54,33 +55,35 @@ const getUncles = (index: number, hash_list: any[], uncles: any[]) => {
     return getUncles(pair_index, level_above, uncles);
 }
 
-const getMerkleRoot = (leafs: any[]) => {
+const getMerkleRoot = (leafs: string[]): string => {
     const hash_list = leafs.map(hashValue);
     return reduceHashList(hash_list);
 }
 
-const getMerkleProof = (leafs: any[], index: number) => {
+const getMerkleProof = (leafs: string[], index: number): ProofType => {
     const hash_list = leafs.map(hashValue);
-    var proof = [];
-    proof.push(getBrother(index, hash_list));
-    proof = getUncles(index, hash_list, proof);
-    return proof;
+    const proof = [getBrother(index, hash_list)];
+    return getUncles(index, hash_list, proof);
 }
 
-const verifyProof = (leaf: string, merkleRoot: string, proof: any[]) => {
+const verifyProof = (leaf: string, merkleRoot: string, proof: ProofType): boolean => {
     var leafHash = hashValue(leaf);
     for (let i = 0; i < proof.length; i++) {
         const [proofHash, index] = proof[i];
-        const pair = index % 2 === 0 ? [proofHash, leafHash] : [leafHash, proofHash];
+        const pair: [string, string] = index % 2 === 0 ? [proofHash, leafHash] : [leafHash, proofHash];
         leafHash = hashPair(pair);
     }
     return leafHash === merkleRoot;
 }
 
-const leafs = ['a', 'b', 'c', 'd'];
-const root = getMerkleRoot(leafs);
-const proof = getMerkleProof(leafs, 0);
-const verified = verifyProof('a', root, proof);
-console.log(verified);
-console.log(root);
-console.log(proof);
+const test = () => {
+    const leafs = ['a', 'b', 'c', 'd'];
+    const root = getMerkleRoot(leafs);
+    const proof = getMerkleProof(leafs, 0);
+    const verified = verifyProof('a', root, proof);
+    console.log(verified);
+    console.log(root);
+    console.log(proof);
+}
+
+test();
