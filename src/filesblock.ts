@@ -122,7 +122,7 @@ const prepareBlockForUpload = (folderPath: string, serverName: string) => {
     return folder;
 }
 
-const uploadBlock = async (folderPath: string, serverName: string) => {
+export const uploadBlock = async (folderPath: string, serverName: string) => {
     if (!fs.statSync(folderPath).isDirectory()) throw new Error('Path is not a directory: ' + folderPath);
     if (!SERVERS[serverName]) throw new Error(`Server not found: ${serverName}`);
     if (!(SERVERS[serverName].storage in STORES)) throw new Error(`Storage not found: ${SERVERS[serverName].storage}`);
@@ -135,7 +135,7 @@ const uploadBlock = async (folderPath: string, serverName: string) => {
     return blockShortHash;
 }
 
-const downloadFile = async (destFolder: string, blockShortHash: string, fileIndex: number) => {
+export const downloadFile = async (destFolder: string, blockShortHash: string, fileIndex: number) => {
     if (!fs.statSync(destFolder).isDirectory()) throw new Error('Path is not a directory: ' + destFolder);
     
     const blockPath = path.join(os.homedir(), ".zamatree", "blocks", blockShortHash + '.json');
@@ -171,9 +171,54 @@ const downloadFile = async (destFolder: string, blockShortHash: string, fileInde
     console.log(`File downloaded and verified: ${destPath}`)
 }
 
+export const listFiles = (blockShortHash: string) => {
+    const blockPath = path.join(os.homedir(), ".zamatree", "blocks", blockShortHash + '.json');
+    if (!fs.existsSync(blockPath)) throw new Error('Block not found: ' + blockShortHash);
+    const blockProperties = JSON.parse(fs.readFileSync(blockPath).toString());
+    return blockProperties.files.map((file: any, index: number) => {
+        return {
+            filename: file.filename,
+            size: file.size,
+            mime: file.mime,
+            shortHash: blockShortHash,
+            index,
+        }
+    });
+}
+
+export const listBlocks = () => {
+    const blocksFolder = path.join(os.homedir(), ".zamatree", "blocks");
+    if (!fs.existsSync(blocksFolder)) throw new Error('Blocks folder not found: ' + blocksFolder);
+    const blocks = fs.readdirSync(blocksFolder);
+    return blocks.map((blockShortHash: string) => {
+        const blockPath = path.join(blocksFolder, blockShortHash);
+        const blockProperties = JSON.parse(fs.readFileSync(blockPath).toString());
+        return {
+            shortHash: blockShortHash.split('.')[0],
+            root: blockProperties.root,
+            filecount: blockProperties.filecount,
+            createdAt: blockProperties.createdAt,
+            server: blockProperties.server,
+        }
+    });
+}
+
+export const listAllFiles = () => {
+    const blocks = listBlocks();
+    var files = [];
+    blocks.forEach((block: any) => {
+        files = files.concat(listFiles(block.shortHash));
+    });
+    return files;
+}
+
 const test = async () => {
-    const blockShortHash = await uploadBlock('./src', "server1")
-    await downloadFile('./', blockShortHash, 2);
+    //const blockShortHash = await uploadBlock('./src', "server1")
+    //await downloadFile('./', blockShortHash, 2);
+    //const files = listFiles(blockShortHash);
+    //console.log(files);
+    const blocks = listAllFiles();
+    console.log(blocks);
 }
 
 /* (async () => {
