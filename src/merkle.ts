@@ -1,5 +1,5 @@
 
-import createKeccakHash = require('keccak');
+import { hashValue } from './utils';
 
 type HashPairType = [string, string];
 type IndexedHashType = [string, number];
@@ -11,10 +11,6 @@ const sliceInPairs = (arr: string[]): HashPairType[] => {
         result.push(arr.slice(i, i + 2));
     }
     return result;
-}
-
-const hashValue = (value: string): string => {
-    return createKeccakHash('keccak256').update(value).digest('hex');
 }
 
 const hashPair = (pair: HashPairType) => {
@@ -55,18 +51,18 @@ const getUncles = (index: number, hashList: string[], uncles: ProofType): ProofT
     return getUncles(pairIndex, levelAbove, uncles);
 }
 
-const getMerkleRoot = (leafs: string[]): string => {
+export const getMerkleRoot = (leafs: string[]): string => {
     const hashList = leafs.map(hashValue);
     return reduceHashList(hashList);
 }
 
-const getMerkleProof = (leafs: string[], index: number): ProofType => {
+export const getMerkleProof = (leafs: string[], index: number): ProofType => {
     const hashList = leafs.map(hashValue);
     const proof = [getBrother(index, hashList)];
     return getUncles(index, hashList, proof);
 }
 
-const verifyProof = (leaf: string, merkleRoot: string, proof: ProofType): boolean => {
+export const verifyProof = (leaf: string, merkleRoot: string, proof: ProofType): boolean => {
     var leafHash = hashValue(leaf);
     for (let i = 0; i < proof.length; i++) {
         const [proofHash, index] = proof[i];
@@ -79,6 +75,9 @@ const verifyProof = (leaf: string, merkleRoot: string, proof: ProofType): boolea
 const test = () => {
     const leafs = ['a', 'b', 'c', 'd'];
     const root = getMerkleRoot(leafs);
+    if (root !== '115cbb4775ed495f3d954dfa47164359a97762b40059d9502895def16eed609c') {
+        throw new Error('Root is not valid');
+    }
     console.log('root:', root);
     for (let i = 0; i < leafs.length; i++) {
         const proof = getMerkleProof(leafs, i);
@@ -90,4 +89,4 @@ const test = () => {
     }
 }
 
-test();
+//test();

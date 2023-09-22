@@ -10,9 +10,14 @@
   "author": "Ouziel Slama",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^20.6.3",
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "keccak": "^3.0.4"
+    "@types/tar": "^6.1.6",
+    "keccak": "^3.0.4",
+    "mime": "^3.0.0",
+    "mime-types": "^2.1.35",
+    "tar": "^6.2.0"
   }
 }
