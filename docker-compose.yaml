@@ -5,8 +5,8 @@ services:
     container_name: openssh-server
     hostname: openssh-server #optional
     environment:
-      - PUID=501
-      - PGID=20
+      #- PUID=501
+      #- PGID=20
       - PUBLIC_KEY=ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPRgBOqnmzg90K2E/xr7vR3z5bbiklMfamqG7LFdF38V root@9790a6f458c6 #optional
       - USER_NAME=zama #optional
     ports:
