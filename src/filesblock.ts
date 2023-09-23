@@ -211,16 +211,3 @@ export const listAllFiles = () => {
     });
     return files;
 }
-
-const test = async () => {
-    //const blockShortHash = await uploadBlock('./src', "server1")
-    //await downloadFile('./', blockShortHash, 2);
-    //const files = listFiles(blockShortHash);
-    //console.log(files);
-    const blocks = listAllFiles();
-    console.log(blocks);
-}
-
-/* (async () => {
-    await test();
-})(); */

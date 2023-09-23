@@ -17,7 +17,7 @@ const hashPair = (pair: HashPairType, isLeaf: boolean) => {
     const [a, b] = pair;
     if (b === undefined) return a;
     // prevent second preimage attack: append '1' if is leaf, '0' if not
-    return hashValue(isLeaf ? '1' : '0' + a + b);
+    return hashValue((isLeaf ? '1' : '0') + a + b);
 }
 
 const hashListByPairs = (hashList: string[], isLeaf: boolean): string[] => {
@@ -85,10 +85,10 @@ const test = () => {
         'a5ed3095b906298fb287593179d707c6821f885e394d1a8cb95307e8234446b4'
     ];
     const root = getMerkleRoot(leafs);
-    if (root !== 'f826e9ce450ae25dc5135a787c61cc87a141591204e4d4001986156983fd6754') {
+    console.log('root:', root);
+    if (root !== '0bda731c82f30759c1fd4a9495b15c793b40b9c91a7e908597e165ae3aaa780b') {
         throw new Error('Root is not valid');
     }
-    console.log('root:', root);
     for (let i = 0; i < leafs.length; i++) {
         const proof = getMerkleProof(leafs, i);
         const verified = verifyProof(leafs[i], root, proof);
