@@ -13,22 +13,23 @@ const sliceInPairs = (arr: string[]): HashPairType[] => {
     return result;
 }
 
-const hashPair = (pair: HashPairType) => {
+const hashPair = (pair: HashPairType, isLeaf: boolean) => {
     const [a, b] = pair;
     if (b === undefined) return a;
-    return hashValue(a + b);
+    // prevent second preimage attack: append '1' if is leaf, '0' if not
+    return hashValue(isLeaf ? '1' : '0' + a + b);
 }
 
-const hashListByPairs = (hashList: string[]): string[] => {
+const hashListByPairs = (hashList: string[], isLeaf: boolean): string[] => {
     if (hashList.length === 1) return hashList;
     const pairs = sliceInPairs(hashList);
-    return pairs.map(hashPair);
+    return pairs.map((pair) => hashPair(pair, isLeaf));
 }
 
-const reduceHashList = (hashList: string[]): string => {
+const reduceHashList = (hashList: string[], isLeaf: boolean): string => {
     if (hashList.length === 1) return hashList[0];
-    const levelAbove = hashListByPairs(hashList);
-    return reduceHashList(levelAbove);
+    const levelAbove = hashListByPairs(hashList, isLeaf);
+    return reduceHashList(levelAbove, false);
 }
 
 const getPairIndex = (index: number): number => {
@@ -43,25 +44,25 @@ const getBrother = (index: number, hashList: string[]): IndexedHashType => {
     return brotherHash ? [brotherHash, brotherIndex] : undefined;
 }
 
-const getUncles = (index: number, hashList: string[], uncles: ProofType): ProofType => {
+const getUncles = (index: number, hashList: string[], uncles: ProofType, isLeaf: boolean): ProofType => {
     if (hashList.length == 2) return uncles;
     const pairIndex = getPairIndex(index);
-    const levelAbove = hashListByPairs(hashList);
+    const levelAbove = hashListByPairs(hashList, isLeaf);
     const brother = getBrother(pairIndex, levelAbove);
     if (brother) uncles.push(brother);
-    return getUncles(pairIndex, levelAbove, uncles);
+    return getUncles(pairIndex, levelAbove, uncles, false);
 }
 
 export const getMerkleRoot = (leafs: string[]): string => {
     const hashList = leafs.map(hashValue);
-    return reduceHashList(hashList);
+    return reduceHashList(hashList, true);
 }
 
 export const getMerkleProof = (leafs: string[], index: number): ProofType => {
     const hashList = leafs.map(hashValue);
     const brother = getBrother(index, hashList);
     const proof = brother ? [getBrother(index, hashList)] : [];
-    return getUncles(index, hashList, proof);
+    return getUncles(index, hashList, proof, true);
 }
 
 export const verifyProof = (leaf: string, merkleRoot: string, proof: ProofType): boolean => {
@@ -69,7 +70,7 @@ export const verifyProof = (leaf: string, merkleRoot: string, proof: ProofType):
     for (let i = 0; i < proof.length; i++) {
         const [proofHash, index] = proof[i];
         const pair: [string, string] = index % 2 === 0 ? [proofHash, leafHash] : [leafHash, proofHash];
-        leafHash = hashPair(pair);
+        leafHash = hashPair(pair, i === 0 ? true : false);
     }
     return leafHash === merkleRoot;
 }
@@ -84,14 +85,14 @@ const test = () => {
         'a5ed3095b906298fb287593179d707c6821f885e394d1a8cb95307e8234446b4'
     ];
     const root = getMerkleRoot(leafs);
-    /* if (root !== '115cbb4775ed495f3d954dfa47164359a97762b40059d9502895def16eed609c') {
+    if (root !== 'f826e9ce450ae25dc5135a787c61cc87a141591204e4d4001986156983fd6754') {
         throw new Error('Root is not valid');
-    } */
+    }
     console.log('root:', root);
     for (let i = 0; i < leafs.length; i++) {
         const proof = getMerkleProof(leafs, i);
         const verified = verifyProof(leafs[i], root, proof);
-        console.log(proof, verified);
+        console.log(leafs[i], verified);
         if (!verified) {
             throw new Error('Proof is not valid');
         }
