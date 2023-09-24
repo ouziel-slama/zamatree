@@ -2,7 +2,7 @@
 
 Zamatree is a command line utility for uploading and downloading files with integrity checking using a Merkle tree.
 
-Zamatree is completely “server agnostic” and does not require any special installation on the server as long as it is possible to upload and download files. Zamatree currently only supports SSH servers via `scp`, but the code is structured so that you can easily add other server types like S3 for example.
+Zamatree is completely “server agnostic” and does not require any special installation on the server as long as it is possible to upload and download files. Zamatree currently supports SSH servers (via `scp`) and Amazon `S3`, but the code is structured so that you can easily add other server types like Google Cloud or Azure for example.
 
 - [Installation](#installation)
 - [Usage](#usage)
@@ -29,15 +29,21 @@ $ npm install && npm run build && npm link
 $ zamatree help
 ```
 
-## Configure
-
 To start a test openssh server:
 
 ```
 $ docker-compose up
 ```
 
-This server is automatically added in the `~/.zamatree/servers.json` configuration file the first time `zamatree` is run. Edit this file to add other ssh servers.
+## Configure
+
+The servers are configured in the `~/.zamatree/servers.json` file. A default configuration, containing the test openssh docker server and a `S3` test account, is automatically generated the first time `zamatree` is run.
+Edit this file to update the S3 key or add a server.
+
+```
+$ zamatree help # to generate the default config file
+$ vi ~/.zamatree/servers.json
+```
 
 # Usage
 
@@ -108,20 +114,29 @@ Zamatree keeps Merkle's root hash in a file `~/.zamatree/blocks/<blockShortHash>
 
 ## Code organization
 
-The two most important modules are `merkle.ts` and `filesblock.ts`.
+The two most important modules are `src/merkle.ts` and `src/filesblock.ts`.
 
-- `merkle.ts`: implementation of the Merkle tree. The code can be optimized to obtain better performance but given the relatively small number of nodes I preferred to prioritize readability. For nodes that have no brothers (on levels with an odd number of nodes), I use the same method as Bitcoin core by concatenating the hash with itself.
+- `src/merkle.ts`: implementation of the Merkle tree. The code can be optimized to obtain better performance but given the relatively small number of nodes I preferred to prioritize readability. For nodes that have no brothers (on levels with an odd number of nodes), I use the same method as Bitcoin core by concatenating the hash with itself.
 This module exposes 3 functions: `getMerkleProof`, `getMerkleRoot`, `verifyProof`.
 
-- `fileblocks.ts`: this module is responsible for preparing the files before uploading them, using one of the modules in the `storages` folder, and also for checking the files after downloading them. This module exposes 5 functions: `uploadBlock`, `downloadFile`, `listAllFiles`, `listFiles`, `listBlocks`.
+- `src/fileblocks.ts`: this module is responsible for preparing the files before uploading them, using one of the modules in the `storages` folder, and also for checking the files after downloading them. It is this module which generates a json file per block (kept on the client) as well as a json file per file containing the proof of Merkle (uploaded with the file). This module exposes 5 functions: `uploadBlock`, `downloadFile`, `listAllFiles`, `listFiles`, `listBlocks`.
 
-- `cli.ts`: a command line wrapper for the 5 functions exposed by `fileblock.ts`
+- `src/cli.ts`: a command line wrapper for the 5 functions exposed by `fileblock.ts`
+
+- `src/config.ts`: Here is defined the maximum size of files and blocks as well as the default servers.
+
+- `src/storages/`: This folder contains one module per server type. For now `scp.ts` and `s3.ts`. To be used by `filesblock.ts` these modules must expose two functions:
+
+```
+const upload = async(folderPath: string, serverName: string)
+const download = async(destFolder: string, fileName: string, serverName: string)
+```
 
 # Short-comings and Todos
 
 1. Use Rust. I'm currently working with Typescript, so it was the fastest language for this challenge.
 2. better error handling and test suite.
-3. Support more storages (S3, Google Cloud, Azur, etc.).
+3. Support more storages (Google Cloud, Azure, etc.).
 4. Support folders with more than 64 files (by separating them into several blocks).
 5. Develop a pool system: before being uploaded, files are placed in a pool, and uploaded when the pool is full or a timeout has passed.
 6. GUI. With a local web server and an HTML/JS interface.

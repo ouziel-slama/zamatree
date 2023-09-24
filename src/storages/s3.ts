@@ -69,7 +69,6 @@ const download = async (destFolder: string, fileName: string, serverName: string
     });
 }
 
-
 const s3 = module.exports = {
     upload,
     download,
