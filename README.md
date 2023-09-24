@@ -4,13 +4,13 @@ Zamatree is a command line utility for uploading and downloading files with inte
 
 Zamatree is completely “server agnostic” and does not require any special installation on the server as long as it is possible to upload and download files. Zamatree currently only supports SSH servers via `scp`, but the code is structured so that you can easily add other server types like S3 for example.
 
-[Installation](#installation)
-[Usage](#usage)
-    [Upload a file](#upload-a-file)
-    [List uploaded files](#list-uploaded-files)
-    [Download a file](#download-a-file)
-[Implementation](#implementation)
-[Short-comings and TODOs](#short-comings-and-todos)
+- [Installation](#installation)
+- [Usage](#usage)
+    - [Upload a file](#upload-a-file)
+    - [List uploaded files](#list-uploaded-files)
+    - [Download a file](#download-a-file)
+- [Implementation](#implementation)
+- [Short-comings and TODOs](#short-comings-and-todos)
 
 # Installation
 
