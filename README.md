@@ -30,8 +30,9 @@ This server is automatically added in the `~/.zamatree/servers.json` configurati
 
 # Usage
 
+&nbsp;
 ![help_screenshot](screenshots/help.png)
-
+&nbsp;
 
 ## Upload files in a folder
 
@@ -45,8 +46,9 @@ For example:
 $ zamatree upload ./src docker
 ```
 
+&nbsp;
 ![upload_screenshot](screenshots/upload.png)
-
+&nbsp;
 
 ## List uploaded files
 
@@ -55,8 +57,9 @@ $ zamatree files
 $ zamatree blocks
 ```
 
+&nbsp;
 ![lists_screenshot](screenshots/lists.png)
-
+&nbsp;
 
 ## Download a file
 
@@ -70,7 +73,9 @@ For example
 $ zamatree download 625c7693 3 ./
 ```
 
+&nbsp;
 ![download_screenshot](screenshots/download.png)
+&nbsp;
 
 # Implementation
 
@@ -78,11 +83,15 @@ To ensure maximum compatibility with existing cloud services, Zamatree is design
 
 Before being uploaded to a server, the file is packaged in a tar.gz archive, accompanied by a `properties.json` file which contains the Merkle proof.
 
+&nbsp;
 ![properties_screenshot](screenshots/properties.png)
+&nbsp;
 
 Zamatree keeps Merkle's root hash in a file `~/.zamatree/blocks/&lt;blockShortHash>.json` and uses it when downloading a file to check Markle's proof of the `properties.json` file.
 
+&nbsp;
 ![block_screenshot](screenshots/block.png)
+&nbsp;
 
 # Short-comings and Todos
 
