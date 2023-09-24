@@ -132,7 +132,8 @@ const upload = async(folderPath: string, serverName: string)
 const download = async(destFolder: string, fileName: string, serverName: string)
 ```
 
-* Note about comments in code.
+**Note about comments in code.**
+
 The code is deliberately almost not commented. I try as much as possible to practice “code as comment”. Comments are only there to justify algorithm choices, arbitrary constants or particularly complex lines of code.
 For the rest, the names of functions and variables must be clear enough and the code readable enough to not require comments.
 
