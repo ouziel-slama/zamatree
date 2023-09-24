@@ -54,7 +54,7 @@ $ vi ~/.zamatree/servers.json
 ## Upload files
 
 ```
-$ zamatree upload <glob pattern> <server name defined in ~/.zamatree/servers.json>
+$ zamatree upload <glob_pattern> <server_name_defined_in_servers_json>
 ```
 
 For example:
@@ -80,14 +80,22 @@ $ zamatree blocks
 
 ## Download a file
 
+Dowload a file in the current directory.
+
 ```
-$ zamatree download <block short hash> <file index> <destination folder>
+$ zamatree download <block_short_hash> <file_index>
+```
+
+You can specify the destination folder with:
+
+```
+$ zamatree download <block_short_hash> <file_index> <destination_folder>
 ```
 
 For example
 
 ```
-$ zamatree download 625c7693 3 ./
+$ zamatree download 947aeb49 5
 ```
 
 &nbsp;

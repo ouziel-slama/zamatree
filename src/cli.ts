@@ -61,7 +61,7 @@ program.command('download')
     .description('Download and verify a file')
     .argument('<blockShortHash>', 'Block short hash')
     .argument('<fileIndex>', 'File index in block')
-    .argument('<destFolder>', 'Destination folder')
+    .argument('[destFolder]', 'Destination folder', process.cwd())
     .action((blockShortHash: string, fileIndex: number, destFolder: string) => {
         downloadFile(destFolder, blockShortHash, fileIndex);
     });
