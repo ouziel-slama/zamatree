@@ -39,7 +39,7 @@ const injectProof = (fileProperties: any, index: number, leafs: string[]) => {
     }
 }
 
-const getBlockProperties = (folderPath: string) => {
+const generateBlockProperties = (folderPath: string) => {
     const abspath = path.resolve(folderPath);
     var files = getFilesInFolder(abspath).map(getFileProperties);
     const hashes = files.map(file => file.hash);
@@ -83,7 +83,7 @@ const prepareFiles = (blockProperties: any) => {
 }
 
 const prepareBlockForUpload = (folderPath: string, serverName: string) => {
-    const blockProperties = getBlockProperties(folderPath);
+    const blockProperties = generateBlockProperties(folderPath);
     const folder = prepareFiles(blockProperties);
     const blocksFolder = path.join(os.homedir(), ".zamatree", "blocks");
     // don't make sense to keep hashes and proofs
@@ -107,11 +107,49 @@ const prepareBlockForUpload = (folderPath: string, serverName: string) => {
     return folder;
 }
 
+const extractAndVerify = (tmpDestFolder: string, fileName: string, blockProperties: any) => {
+    tar.extract({
+        file: path.join(tmpDestFolder, fileName),
+        cwd: tmpDestFolder,
+        sync: true,
+    });
+    const propertiesPath = path.join(tmpDestFolder, fileName.replace('.tar.gz', ''), 'properties.json');
+    const properties = JSON.parse(fs.readFileSync(propertiesPath).toString());
+    const filePath = path.join(tmpDestFolder, fileName.replace('.tar.gz', ''), properties.filename);
+    const fileContent = fs.readFileSync(filePath);
+    const fileHash = hashValue(fileContent.toString());
+    const verified = verifyProof(fileHash, blockProperties.root, properties.proof);
+    if (!verified) throw new Error('File verification failed');
+    return filePath;
+}
+
+const getBlockProperties = (blockShortHash: string) => {
+    const blockPath = path.join(os.homedir(), ".zamatree", "blocks", blockShortHash + '.json');
+    if (!fs.existsSync(blockPath)) throw new Error('Block not found: ' + blockShortHash);
+    return JSON.parse(fs.readFileSync(blockPath).toString());
+}
+
+const initTempFolder = (blockShortHash: string) => {
+    const tmpDestFolder = path.join(os.tmpdir(), blockShortHash);
+    if (fs.existsSync(tmpDestFolder)) fs.rmSync(tmpDestFolder, { recursive: true });
+    fs.mkdirSync(tmpDestFolder, { recursive: true });
+    return tmpDestFolder;
+}
+
+const downloadInTempFolder = async (blockShortHash: string, fileIndex: number, blockProperties: any) => {
+    const tmpDestFolder = initTempFolder(blockShortHash);
+    const fileName = `${fileIndex}_${blockShortHash}.tar.gz`;
+    console.log(`Downloading file from ${blockProperties.server}...`);
+    await STORES[SERVERS[blockProperties.server].storage].download(
+        tmpDestFolder, `${blockShortHash}/${fileName}`, blockProperties.server
+    );
+    return { tmpDestFolder, fileName };
+}
+
 export const uploadBlock = async (folderPath: string, serverName: string) => {
     if (!fs.statSync(folderPath).isDirectory()) throw new Error('Path is not a directory: ' + folderPath);
     if (!SERVERS[serverName]) throw new Error(`Server not found: ${serverName}`);
     if (!(SERVERS[serverName].storage in STORES)) throw new Error(`Storage not found: ${SERVERS[serverName].storage}`);
-    
     const folder = prepareBlockForUpload(folderPath, serverName);
     console.log(`Uploading files in ${folderPath} to ${serverName}...`);
     await STORES[SERVERS[serverName].storage].upload(folder, serverName);
@@ -122,36 +160,11 @@ export const uploadBlock = async (folderPath: string, serverName: string) => {
 
 export const downloadFile = async (destFolder: string, blockShortHash: string, fileIndex: number) => {
     if (!fs.statSync(destFolder).isDirectory()) throw new Error('Path is not a directory: ' + destFolder);
-    
-    const blockPath = path.join(os.homedir(), ".zamatree", "blocks", blockShortHash + '.json');
-    if (!fs.existsSync(blockPath)) throw new Error('Block not found: ' + blockShortHash);
-    
-    const blockProperties = JSON.parse(fs.readFileSync(blockPath).toString());
+    const blockProperties = getBlockProperties(blockShortHash);
     if (fileIndex >= blockProperties.filecount) throw new Error('File not found: ' + fileIndex);
-    
-    const fileName = `${fileIndex}_${blockShortHash}.tar.gz`;
-    const tmpDestFolder = path.join(os.tmpdir(), blockProperties.root.substring(0, 8));
-    if (fs.existsSync(tmpDestFolder)) fs.rmSync(tmpDestFolder, { recursive: true });
-    fs.mkdirSync(tmpDestFolder, { recursive: true });
-
-    console.log(`Downloading file from ${blockProperties.server}...`);
-    await STORES[SERVERS[blockProperties.server].storage].download(
-        tmpDestFolder, `${blockShortHash}/${fileName}`, blockProperties.server
-    );
-    tar.extract({
-        file: path.join(tmpDestFolder, fileName),
-        cwd: tmpDestFolder,
-        sync: true,
-    });
-
-    const propertiesPath = path.join(tmpDestFolder, fileName.replace('.tar.gz', ''), 'properties.json');
-    const properties = JSON.parse(fs.readFileSync(propertiesPath).toString());
-    const filePath = path.join(tmpDestFolder, fileName.replace('.tar.gz', ''), properties.filename);
-    const fileContent = fs.readFileSync(filePath);
-    const fileHash = hashValue(fileContent.toString());
-    const verified = verifyProof(fileHash, blockProperties.root, properties.proof);
-    if (!verified) throw new Error('File verification failed');
-    const destPath = path.join(destFolder, properties.filename);
+    const { tmpDestFolder, fileName } = await downloadInTempFolder(blockShortHash, fileIndex, blockProperties);
+    const filePath = extractAndVerify(tmpDestFolder, fileName, blockProperties);
+    const destPath = path.join(destFolder, path.basename(filePath));
     fs.copyFileSync(filePath, destPath);
     console.log(`File downloaded and verified: ${destPath}`)
 }
