@@ -119,7 +119,7 @@ The two most important modules are `src/merkle.ts` and `src/filesblock.ts`.
 - `src/merkle.ts`: implementation of the Merkle tree. The code can be optimized to obtain better performance but given the relatively small number of nodes I preferred to prioritize readability. For nodes that have no brothers (on levels with an odd number of nodes), I use the same method as Bitcoin core by concatenating the hash with itself.
 This module exposes 3 functions: `getMerkleProof`, `getMerkleRoot`, `verifyProof`.
 
-- `src/fileblocks.ts`: this module is responsible for preparing the files before uploading them, using one of the modules in the `storages` folder, and also for checking the files after downloading them. It is this module which generates a json file per block (kept on the client) as well as a json file per file containing the proof of Merkle (uploaded with the file). This module exposes 5 functions: `uploadBlock`, `downloadFile`, `listAllFiles`, `listFiles`, `listBlocks`.
+- `src/fileblocks.ts`: this module is responsible for preparing the files before uploading them and also for checking the files after downloading them. It is this module which generates a json file per block (kept on the client) as well as a json file per file containing the proof of Merkle (uploaded with the file). This module exposes 5 functions: `uploadBlock`, `downloadFile`, `listAllFiles`, `listFiles`, `listBlocks`.
 
 - `src/cli.ts`: a command line wrapper for the 5 functions exposed by `fileblock.ts`
 
