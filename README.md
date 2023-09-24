@@ -10,15 +10,26 @@ Zamatree is completely “server agnostic” and does not require any special in
     - [List uploaded files](#list-uploaded-files)
     - [Download a file](#download-a-file)
 - [Implementation](#implementation)
+    - [Methodology](#methodology)
+    - [Code organization](#code-organization)
 - [Short-comings and TODOs](#short-comings-and-todos)
 
 # Installation
+
+## Requirement
+
+- `scp`
+
+## Download and install
 
 ```
 $ git clone git@github.com:ouziel-slama/zamatree.git
 $ cd zamatree
 $ npm install && npm run build && npm link
+$ zamatree help
 ```
+
+## Configure
 
 To start a test openssh server:
 
@@ -79,6 +90,8 @@ $ zamatree download 625c7693 3 ./
 
 # Implementation
 
+## Methodology
+
 To ensure maximum compatibility with existing cloud services, Zamatree is designed to leave no responsibility for the server other than storing files. All Merkle tree generation and verification operations are done on the client.
 
 Before being uploaded to a server, the file is packaged in a tar.gz archive, accompanied by a `properties.json` file which contains the Merkle proof.
@@ -92,6 +105,17 @@ Zamatree keeps Merkle's root hash in a file `~/.zamatree/blocks/&lt;blockShortHa
 &nbsp;
 ![block_screenshot](screenshots/block.png)
 &nbsp;
+
+## Code organization
+
+The two most important modules are `merkle.ts` and `filesblock.ts`.
+
+- `merkle.ts`: implementation of the Merkle tree. The code can be optimized to obtain better performance but given the relatively small number of nodes I preferred to prioritize readability. For nodes that have no brothers (on levels with an odd number of nodes), I use the same method as Bitcoin core by concatenating the hash with itself.
+This module exposes 3 functions: `getMerkleProof`, `getMerkleRoot`, `verifyProof`.
+
+- `fileblocks.ts`: this module is responsible for preparing the files before uploading them, using one of the modules in the `storages` folder, and also for checking the files after downloading them. This module exposes 5 functions: `uploadBlock`, `downloadFile`, `listAllFiles`, `listFiles`, `listBlocks`.
+
+- `cli.ts`: a command line wrapper for the 5 functions exposed by `fileblock.ts`
 
 # Short-comings and Todos
 
