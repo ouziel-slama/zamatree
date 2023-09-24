@@ -6,7 +6,7 @@ Zamatree is completely “server agnostic” and does not require any special in
 
 - [Installation](#installation)
 - [Usage](#usage)
-    - [Upload a file](#upload-a-file)
+    - [Upload files in a folder](#upload-files-in-a-folder)
     - [List uploaded files](#list-uploaded-files)
     - [Download a file](#download-a-file)
 - [Implementation](#implementation)
@@ -16,7 +16,7 @@ Zamatree is completely “server agnostic” and does not require any special in
 
 ```
 $ git clone git@github.com:ouziel-slama/zamatree.git
-$ cd for trees
+$ cd zamatree
 $ npm install && npm run build && npm link
 ```
 
@@ -33,7 +33,7 @@ This server is automatically added in the `~/.zamatree/servers.json` configurati
 ![help_screenshot](screenshots/help.png)
 
 
-## Upload a file
+## Upload files in a folder
 
 ```
 $ zamatree upload <folder path> <server name defined in ~/.zamatree/servers.json>
