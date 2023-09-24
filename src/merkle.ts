@@ -14,8 +14,8 @@ const sliceInPairs = (arr: string[]): HashPairType[] => {
 }
 
 const hashPair = (pair: HashPairType, isLeaf: boolean) => {
-    const [a, b] = pair;
-    if (b === undefined) return a;
+    var [a, b] = pair;
+    if (b === undefined) b = a; // like in Bitcoin core implementation
     // prevent second preimage attack: append '1' if is leaf, '0' if not
     return hashValue((isLeaf ? '1' : '0') + a + b);
 }
@@ -40,8 +40,8 @@ const getPairIndex = (index: number): number => {
 
 const getBrother = (index: number, hashList: string[]): IndexedHashType => {
     const brotherIndex = index % 2 === 0 ? index + 1 : index - 1;
-    const brotherHash = hashList[brotherIndex];
-    return brotherHash ? [brotherHash, brotherIndex] : undefined;
+    const brotherHash = hashList[brotherIndex] ? hashList[brotherIndex] : hashList[index];
+    return [brotherHash, brotherIndex];
 }
 
 const getUncles = (index: number, hashList: string[], uncles: ProofType, isLeaf: boolean): ProofType => {
@@ -86,13 +86,13 @@ const test = () => {
     ];
     const root = getMerkleRoot(leafs);
     console.log('root:', root);
-    if (root !== '0bda731c82f30759c1fd4a9495b15c793b40b9c91a7e908597e165ae3aaa780b') {
+    if (root !== 'ab3fff9abac9590b9a8be77f64e8b8cd74cc1cf0ff31e130b087a12bf11004ac') {
         throw new Error('Root is not valid');
     }
     for (let i = 0; i < leafs.length; i++) {
         const proof = getMerkleProof(leafs, i);
         const verified = verifyProof(leafs[i], root, proof);
-        console.log(leafs[i], verified);
+        console.log(leafs[i], proof, verified);
         if (!verified) {
             throw new Error('Proof is not valid');
         }
