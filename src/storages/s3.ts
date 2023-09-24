@@ -1,9 +1,6 @@
 import fs = require('fs');
 import path = require('path');
-import AWS = require('aws-sdk');
-
 import { Readable } from 'stream'
-
 import { PutObjectCommand, GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 
 import { getFilesInFolder } from '../utils';
