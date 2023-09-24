@@ -1,10 +1,11 @@
-import fs = require('fs');
-import path = require('path');
+import * as fs from 'fs';
+import * as path from 'path';
+
 import { Readable } from 'stream'
 import { PutObjectCommand, GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 
-import { getFilesInFolder } from '../utils';
-import  { SERVERS } from '../config';
+import { getFilesInFolder } from '../utils.js';
+import  { SERVERS } from '../config.js';
 
 const getAwsClient = (serverName: string) => {
     if (!SERVERS[serverName]) throw new Error(`Server not found: ${serverName}`);
@@ -37,7 +38,7 @@ const upload = async (folderPath: string, serverName: string) => {
                 Body: fileData
             });
             const response = await client.send(command);
-            console.log(`${file} uploaded successfully to ${serverName}`);
+            console.log(`${path.basename(file)} uploaded successfully to ${serverName}`);
         } catch (err) {
             console.log(err)
         }
@@ -66,7 +67,7 @@ const download = async (destFolder: string, fileName: string, serverName: string
     });
 }
 
-const s3 = module.exports = {
+export default {
     upload,
     download,
 };

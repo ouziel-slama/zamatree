@@ -1,8 +1,8 @@
-import * as fs from 'fs'
-import path = require('path');
-const { spawn } = require('node:child_process');
+import * as fs from 'fs';
+import * as path from 'path';
+import { spawn } from 'node:child_process';
 
-import  { SERVERS } from '../config';
+import  { SERVERS } from '../config.js';
 
 const scpCommand = async (serverName: string, src: string, dest: string) => {
     if (!SERVERS[serverName]) throw new Error(`Server not found: ${serverName}`);
@@ -42,7 +42,7 @@ const download = async (destFolder: string, fileName: string, serverName: string
     await scpCommand(serverName, src, dest);
 }
 
-const scp = module.exports = {
+export default {
     upload,
     download,
 };

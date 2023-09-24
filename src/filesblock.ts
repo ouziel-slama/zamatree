@@ -1,14 +1,16 @@
-import fs = require('fs');
-import mime = require('mime-types');
-import path = require("path");
-import tar = require('tar');
-import os = require('os');
+import * as fs from 'fs';
+import * as path from 'path';
+import * as os from 'os';
 
-import { hashValue, getFilesInFolder } from './utils';
-import { getMerkleProof, getMerkleRoot, verifyProof } from './merkle';
-import { MAX_FILES_BY_BLOCK, MAX_FILE_SIZE, SERVERS } from './config';
-import scp = require('./storages/scp');
-import s3 = require('./storages/s3');
+import * as mime from 'mime-types';
+import * as tar from 'tar';
+import { globSync } from 'glob'
+
+import { hashValue } from './utils.js';
+import { getMerkleProof, getMerkleRoot, verifyProof } from './merkle.js';
+import { MAX_FILES_BY_BLOCK, MAX_FILE_SIZE, SERVERS } from './config.js';
+import scp from './storages/scp.js';
+import s3 from './storages/s3.js';
 
 const STORES = {
     "scp": scp,
@@ -39,9 +41,9 @@ const injectProof = (fileProperties: any, index: number, leafs: string[]) => {
     }
 }
 
-const generateBlockProperties = (folderPath: string) => {
-    const abspath = path.resolve(folderPath);
-    var files = getFilesInFolder(abspath).map(getFileProperties);
+const generateBlockProperties = (globPattern: string) => {
+    var files = globSync(globPattern).map(getFileProperties);
+    if (files.length < 2) throw new Error('Less than 2 files found: ' + globPattern);
     const hashes = files.map(file => file.hash);
     files = files.map((file, index) => injectProof(file, index, hashes));
     if (files.length > MAX_FILES_BY_BLOCK) {
@@ -49,7 +51,7 @@ const generateBlockProperties = (folderPath: string) => {
     };
     return {
         root: getMerkleRoot(hashes),
-        path: abspath,
+        path: globPattern,
         filecount: files.length,
         createdAt: new Date().toISOString(),
         files,
@@ -82,8 +84,8 @@ const prepareFiles = (blockProperties: any) => {
     return destFolder;
 }
 
-const prepareBlockForUpload = (folderPath: string, serverName: string) => {
-    const blockProperties = generateBlockProperties(folderPath);
+const prepareBlockForUpload = (globPattern: string, serverName: string) => {
+    const blockProperties = generateBlockProperties(globPattern);
     const folder = prepareFiles(blockProperties);
     const blocksFolder = path.join(os.homedir(), ".zamatree", "blocks");
     // don't make sense to keep hashes and proofs
@@ -146,12 +148,11 @@ const downloadInTempFolder = async (blockShortHash: string, fileIndex: number, b
     return { tmpDestFolder, fileName };
 }
 
-export const uploadBlock = async (folderPath: string, serverName: string) => {
-    if (!fs.statSync(folderPath).isDirectory()) throw new Error('Path is not a directory: ' + folderPath);
+export const uploadBlock = async (globPattern: string, serverName: string) => {
     if (!SERVERS[serverName]) throw new Error(`Server not found: ${serverName}`);
     if (!(SERVERS[serverName].storage in STORES)) throw new Error(`Storage not found: ${SERVERS[serverName].storage}`);
-    const folder = prepareBlockForUpload(folderPath, serverName);
-    console.log(`Uploading files in ${folderPath} to ${serverName}...`);
+    const folder = prepareBlockForUpload(globPattern, serverName);
+    console.log(`Uploading files in ${globPattern} to ${serverName}...`);
     await STORES[SERVERS[serverName].storage].upload(folder, serverName);
     const blockShortHash = path.basename(folder);
     console.log(`Files uploaded in block ${blockShortHash}.`);

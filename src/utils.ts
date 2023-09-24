@@ -1,6 +1,7 @@
-import createKeccakHash = require('keccak');
-import fs = require('fs');
-import path = require("path");
+import * as fs from 'fs';
+import * as path from 'path';
+
+import createKeccakHash from 'keccak';
 
 export const hashValue = (value: string): string => {
     return createKeccakHash('keccak256').update(value).digest('hex');

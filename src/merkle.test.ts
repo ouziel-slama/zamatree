@@ -1,6 +1,6 @@
-const { expect , test } = require('@jest/globals');
+import { expect , test } from '@jest/globals';
 
-import { getMerkleProof, getMerkleRoot, verifyProof } from './merkle';
+import { getMerkleProof, getMerkleRoot, verifyProof } from './merkle.js';
 
 test('should verify all leafs', () => {
     const leafs = [

@@ -2,8 +2,11 @@
     "compilerOptions": {
         "outDir": "./build",
         "allowJs": true,
-        "target": "es5"
+        "target": "ES2017",
+        "module": "esnext",
+        "moduleResolution":"node",
     },
-    "include": ["./src/**/*"]
+    "include": ["./src/**/*"],
+    
 }
   

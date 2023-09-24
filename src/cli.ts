@@ -1,14 +1,15 @@
 #! /usr/bin/env node
-const { printTable } = require("console-table-printer");
-const { Command } = require('commander');
-const program = new Command();
+import { printTable }  from "console-table-printer";
+import { Command } from 'commander';
 
-const { 
+import { 
     listAllFiles, listFiles, listBlocks, 
     uploadBlock, downloadFile 
-} = require('./filesblock');
+}  from './filesblock.js';
 
-const { SERVERS } = require('./config');
+import { SERVERS }  from './config.js';
+
+const program = new Command();
 
 program
     .name('zamatree')
@@ -49,18 +50,18 @@ program.command('servers')
     });
 
 program.command('upload')
-    .description('Upload all file in a folder')
-    .arguments('<folder>', 'Folder to upload')
-    .arguments('<server>', 'Server name to upload files')
+    .description('Upload files mathing the glob pattern')
+    .argument('<globPattern>', 'glob pattern to upload (e.g. "folder/**/*.*"')
+    .argument('<server>', 'Server name to upload files')
     .action((folder: string, server: string) => {
         uploadBlock(folder, server);
     });
 
 program.command('download')
     .description('Download and verify a file')
-    .arguments('<blockShortHash>', 'Block short hash')
-    .arguments('<fileIndex>', 'File index in block')
-    .arguments('<destFolder>', 'Destination folder')
+    .argument('<blockShortHash>', 'Block short hash')
+    .argument('<fileIndex>', 'File index in block')
+    .argument('<destFolder>', 'Destination folder')
     .action((blockShortHash: string, fileIndex: number, destFolder: string) => {
         downloadFile(destFolder, blockShortHash, fileIndex);
     });

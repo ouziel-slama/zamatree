@@ -6,7 +6,7 @@ Zamatree is completely “server agnostic” and does not require any special in
 
 - [Installation](#installation)
 - [Usage](#usage)
-    - [Upload files in a folder](#upload-files-in-a-folder)
+    - [Upload files](#upload-files)
     - [List uploaded files](#list-uploaded-files)
     - [Download a file](#download-a-file)
 - [Implementation](#implementation)
@@ -51,16 +51,16 @@ $ vi ~/.zamatree/servers.json
 ![help_screenshot](screenshots/help.png)
 &nbsp;
 
-## Upload files in a folder
+## Upload files
 
 ```
-$ zamatree upload <folder path> <server name defined in ~/.zamatree/servers.json>
+$ zamatree upload <glob pattern> <server name defined in ~/.zamatree/servers.json>
 ```
 
 For example:
 
 ```
-$ zamatree upload ./src docker
+$ zamatree upload './src/**/*.ts' s3
 ```
 
 &nbsp;

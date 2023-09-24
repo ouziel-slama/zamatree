@@ -1,6 +1,6 @@
-import fs = require('fs');
-import path = require('path');
-import os = require('os');
+import * as fs from 'fs';
+import * as path from 'path';
+import * as os from 'os';
 
 const appFolder = path.join(os.homedir(), ".zamatree");
 const serversFile = path.join(appFolder, "servers.json");

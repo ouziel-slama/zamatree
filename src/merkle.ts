@@ -1,5 +1,5 @@
 
-import { hashValue } from './utils';
+import { hashValue } from './utils.js';
 
 type HashPairType = [string, string];
 type IndexedHashType = [string, number];
