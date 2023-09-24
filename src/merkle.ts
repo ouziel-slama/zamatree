@@ -74,3 +74,13 @@ export const verifyProof = (leaf: string, merkleRoot: string, proof: ProofType):
     }
     return leafHash === merkleRoot;
 }
+
+export const internalFunctions = {
+    sliceInPairs,
+    hashPair,
+    hashListByPairs,
+    reduceHashList,
+    getPairIndex,
+    getBrother,
+    getUncles,
+}

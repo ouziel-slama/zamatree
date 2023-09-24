@@ -35,6 +35,12 @@ To start a test openssh server:
 $ docker-compose up
 ```
 
+To run tests:
+
+```
+$ npm run test
+```
+
 ## Configure
 
 The servers are configured in the `~/.zamatree/servers.json` file. A default configuration, containing the test openssh docker server and a `S3` test account, is automatically generated the first time `zamatree` is run.
@@ -148,7 +154,7 @@ For the rest, the names of functions and variables must be clear enough and the 
 # Short-comings and Todos
 
 1. Use Rust. I'm currently working with Typescript, so it was the fastest language for this challenge.
-2. better error handling and test suite.
+2. better error handling and more tests.
 3. Support more storages (Google Cloud, Azure, etc.).
 4. Support folders with more than 64 files (by separating them into several blocks).
 5. Develop a pool system: before being uploaded, files are placed in a pool, and uploaded when the pool is full or a timeout has passed.
