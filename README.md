@@ -4,12 +4,18 @@ Zamatree is a command line utility for uploading and downloading files with inte
 
 Zamatree is completely “server agnostic” and does not require any special installation on the server as long as it is possible to upload and download files. Zamatree currently only supports SSH servers via `scp`, but the code is structured so that you can easily add other server types like S3 for example.
 
-[TOC]
+[Installation](#installation)
+[Usage](#usage)
+    [Upload a file](#upload-a-file)
+    [List uploaded files](#list-uploaded-files)
+    [Download a file](#download-a-file)
+[Implementation](#implementation)
+[Short-comings and TODOs](#short-comings-and-todos)
 
-# Installation {#installation}
+# Installation
 
 ```
-$ git clone …
+$ git clone git@github.com:ouziel-slama/zamatree.git
 $ cd for trees
 $ npm install && npm run build && npm link
 ```
@@ -22,14 +28,14 @@ $ docker-compose up
 
 This server is automatically added in the `~/.zamatree/servers.json` configuration file the first time `zamatree` is run. Edit this file to add other ssh servers.
 
-# Usage {#usage}
+# Usage
 
 ![help_screenshot](screenshots/help.png)
 
 
-## Upload a file {#upload-a-file}
+## Upload a file
 
-````
+```
 $ zamatree upload <folder path> <server name defined in ~/.zamatree/servers.json>
 ```
 
@@ -42,7 +48,7 @@ $ zamatree upload ./src docker
 ![upload_screenshot](screenshots/upload.png)
 
 
-## List uploaded files {#list-uploaded-files}
+## List uploaded files
 
 ```
 $ zamatree files
@@ -52,7 +58,7 @@ $ zamatree blocks
 ![lists_screenshot](screenshots/lists.png)
 
 
-## Download a file {#download-a-file}
+## Download a file
 
 ```
 $ zamatree download <block short hash> <file index> <destination folder>
@@ -66,7 +72,7 @@ $ zamatree download 625c7693 3 ./
 
 ![download_screenshot](screenshots/download.png)
 
-# Implementation {#implementation}
+# Implementation
 
 To ensure maximum compatibility with existing cloud services, Zamatree is designed to leave no responsibility for the server other than storing files. All Merkle tree generation and verification operations are done on the client.
 
