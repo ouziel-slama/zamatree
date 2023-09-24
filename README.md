@@ -100,7 +100,7 @@ Before being uploaded to a server, the file is packaged in a tar.gz archive, acc
 ![properties_screenshot](screenshots/properties.png)
 &nbsp;
 
-Zamatree keeps Merkle's root hash in a file `~/.zamatree/blocks/&lt;blockShortHash>.json` and uses it when downloading a file to check Markle's proof of the `properties.json` file.
+Zamatree keeps Merkle's root hash in a file `~/.zamatree/blocks/<blockShortHash>.json` and uses it when downloading a file to check Markle's proof of the `properties.json` file.
 
 &nbsp;
 ![block_screenshot](screenshots/block.png)

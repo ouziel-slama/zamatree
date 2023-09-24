@@ -14,6 +14,12 @@ if (!fs.existsSync(serversFile)) {
             "key": path.resolve(`${__dirname}/../docker-privkey`),
             "path": "/tmp",
         },
+        "s3": {
+            "storage": "s3",
+            "bucket": "zamabucket",
+            "aws_key_id": "AKIATFAIXLJP7QQT5IKB",
+            "aws_secret_key": "",
+        }
     }, null, 2));
 }
 

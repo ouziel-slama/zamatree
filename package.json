@@ -17,11 +17,11 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.418.0",
     "@types/tar": "^6.1.6",
     "commander": "^11.0.0",
     "console-table-printer": "^2.11.2",
     "keccak": "^3.0.4",
-    "mime": "^3.0.0",
     "mime-types": "^2.1.35",
     "tar": "^6.2.0"
   }

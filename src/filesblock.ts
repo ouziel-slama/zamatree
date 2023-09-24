@@ -1,16 +1,18 @@
-import * as fs from 'fs'
+import fs = require('fs');
 import mime = require('mime-types');
 import path = require("path");
 import tar = require('tar');
 import os = require('os');
 
-import { hashValue } from './utils';
+import { hashValue, getFilesInFolder } from './utils';
 import { getMerkleProof, getMerkleRoot, verifyProof } from './merkle';
 import { MAX_FILES_BY_BLOCK, MAX_FILE_SIZE, SERVERS } from './config';
 import scp = require('./storages/scp');
+import s3 = require('./storages/s3');
 
 const STORES = {
     "scp": scp,
+    "s3": s3,
 }
 
 const getFileProperties = (filePath: string) => {
@@ -27,23 +29,6 @@ const getFileProperties = (filePath: string) => {
         hash: hashValue(fileContent.toString()),
         path: abspath,
     }
-}
-
-const getFilesInFolder = (folderPath: string) => {
-    if (!fs.statSync(folderPath).isDirectory()) {
-        throw new Error('Path is not a directory: ' + folderPath);
-    }
-    const filesInFolder = fs.readdirSync(folderPath)
-    var allFiles = [];
-    filesInFolder.forEach((file)  =>{
-        const filePath = path.resolve(path.join(folderPath, file));
-        if (fs.statSync(filePath).isDirectory()) {
-            allFiles = allFiles.concat(getFilesInFolder(filePath));
-        } else {
-            allFiles.push(filePath);
-        }
-    })
-    return allFiles;
 }
 
 const injectProof = (fileProperties: any, index: number, leafs: string[]) => {
