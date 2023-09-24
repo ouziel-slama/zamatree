@@ -207,7 +207,7 @@ export const listAllFiles = () => {
     const blocks = listBlocks();
     var files = [];
     blocks.forEach((block: any) => {
-        files = files.concat(listFiles(block.shortHash));
+        files.push(listFiles(block.shortHash));
     });
     return files;
 }

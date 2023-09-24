@@ -1,5 +1,5 @@
 #! /usr/bin/env node
-
+const { printTable } = require("console-table-printer");
 const { Command } = require('commander');
 const program = new Command();
 
@@ -19,21 +19,33 @@ program.command('files')
     .description('List all files or files in a block')
     .option('-b, --block <shortHash>', 'Block short hash')
     .action((options: any) => {
-        const files = options.block === undefined ? listAllFiles() : listFiles(options.block);
-        console.log(files);
+        if (options.block === undefined) {
+            const files = listAllFiles();
+            files.map((file: any) => printTable(file));
+        } else {
+            const files = listFiles(options.block);
+            printTable(files);
+        }
+  
     });
 
 program.command('blocks')
     .description('List all blocks')
     .action(() => {
         const blocks = listBlocks();
-        console.log(blocks);
+        printTable(blocks);
     });
 
 program.command('servers')
     .description('List all servers')
     .action(() => {
-        console.log(SERVERS);
+        for (const serverName in SERVERS) {
+            const server = {
+                name: serverName,
+                ...SERVERS[serverName],
+            }
+            printTable([server]);
+        }
     });
 
 program.command('upload')
