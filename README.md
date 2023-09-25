@@ -19,6 +19,9 @@ Zamatree is completely “server agnostic” and does not require any special in
 ## Requirement
 
 - `scp`
+- Node v18
+
+Tested on MacOS and Alpine Linux.
 
 ## Download and install
 
@@ -29,9 +32,12 @@ $ npm install && npm run build && npm link
 $ zamatree help
 ```
 
+NOTE: on Linux you probably should use `sudo npm link`
+
 To start a test openssh server:
 
 ```
+$ chmod 600 docker-privkey
 $ docker-compose up
 ```
 
