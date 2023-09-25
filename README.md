@@ -82,6 +82,8 @@ Here an example of this file:
 }
 ```
 
+Note: for `scp` servers, `zamatree` supports hosts (key path and port) defined in `~/.ssh/config`.
+
 # Usage
 
 &nbsp;
