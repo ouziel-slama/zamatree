@@ -57,6 +57,31 @@ $ zamatree help # to generate the default config file
 $ vi ~/.zamatree/servers.json
 ```
 
+Here an example of a this file:
+
+```
+{
+    "docker": {
+        "storage": "scp",
+        "host": "zama@localhost",
+        "port": 2222,
+        "key": "/Users/ouzielslama/Work/zama/zamatree/docker-privkey",
+        "path": "/tmp"
+    },
+    "server1": {
+        "storage": "scp",
+        "host": "alpine",
+        "path": "/home/tower"
+    },
+    "s3": {
+        "storage": "s3",
+        "bucket": "zamabucket",
+        "aws_key_id": "AKIATFAIXLJP7QQT5IKB",
+        "aws_secret_key": "<AWS_SECRET_KEY>"
+    }
+}
+```
+
 # Usage
 
 &nbsp;

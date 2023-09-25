@@ -9,6 +9,18 @@ import {
 
 import { SERVERS }  from './config.js';
 
+const printJson = (data: any) => {
+    console.log(JSON.stringify(data, null, 4));
+};
+
+const printOutput = (data: any, json: boolean) => {
+    if (json) {
+        printJson(data);
+    } else {
+        printTable(data);
+    }
+};
+
 const program = new Command();
 
 program
@@ -19,33 +31,40 @@ program
 program.command('files')
     .description('List all files or files in a block')
     .option('-b, --block <shortHash>', 'Block short hash')
+    .option('-j, --json', 'Output in json format')
     .action((options: any) => {
         if (options.block === undefined) {
             const files = listAllFiles();
-            files.map((file: any) => printTable(file));
+            files.map((file: any) => printOutput(file, options.json));
         } else {
             const files = listFiles(options.block);
-            printTable(files);
+            printOutput(files, options.json);
         }
   
     });
 
 program.command('blocks')
     .description('List all blocks')
-    .action(() => {
+    .option('-j, --json', 'Output in json format')
+    .action((options: any) => {
         const blocks = listBlocks();
-        printTable(blocks);
+        printOutput(blocks, options.json);
     });
 
 program.command('servers')
     .description('List all servers')
-    .action(() => {
-        for (const serverName in SERVERS) {
-            const server = {
-                name: serverName,
-                ...SERVERS[serverName],
+    .option('-j, --json', 'Output in json format')
+    .action((options: any) => {
+        if (options.json) {
+            printJson(SERVERS);
+        } else {
+            for (const serverName in SERVERS) {
+                const server = {
+                    name: serverName,
+                    ...SERVERS[serverName],
+                }
+                printTable([server]);
             }
-            printTable([server]);
         }
     });
 
