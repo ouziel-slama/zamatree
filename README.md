@@ -57,7 +57,7 @@ $ zamatree help # to generate the default config file
 $ vi ~/.zamatree/servers.json
 ```
 
-Here an example of a this file:
+Here an example of this file:
 
 ```
 {
