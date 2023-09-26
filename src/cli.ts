@@ -1,4 +1,5 @@
 #! /usr/bin/env node
+
 import { printTable }  from "console-table-printer";
 import { Command } from 'commander';
 

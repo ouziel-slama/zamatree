@@ -5,6 +5,10 @@ Zamatree is a command line utility for uploading and downloading files with inte
 Zamatree is completely “server agnostic” and does not require any special installation on the server as long as it is possible to upload and download files. Zamatree currently supports SSH servers (via `scp`) and Amazon `S3`, but the code is structured so that you can easily add other server types like Google Cloud or Azure for example.
 
 - [Installation](#installation)
+    - [Requirement](#requirement)
+    - [Quickstart](#quickstart)
+    - [Download and install from source](#download-and-install-from-source)
+    - [Configure](#configure)
 - [Usage](#usage)
     - [Upload files](#upload-files)
     - [List uploaded files](#list-uploaded-files)
@@ -23,7 +27,22 @@ Zamatree is completely “server agnostic” and does not require any special in
 
 Tested on MacOS and Alpine Linux.
 
-## Download and install
+## Quickstart
+
+```
+$ nvm use v18
+$ npm install -g zamatree
+$ zamatree help
+$ vi ~/.zamatree/servers.json
+```
+
+Update the S3 id and key then:
+
+```
+$ zamatree upload './*.json' s3
+```
+
+## Download and install from source
 
 ```
 $ git clone git@github.com:ouziel-slama/zamatree.git
@@ -87,7 +106,7 @@ Note: for `scp` servers, `zamatree` supports hosts (key path and port) defined i
 # Usage
 
 &nbsp;
-![help_screenshot](screenshots/help.png)
+![help_screenshot](https://raw.githubusercontent.com/ouziel-slama/zamatree/master/screenshots/help.png)
 &nbsp;
 
 ## Upload files
@@ -103,7 +122,7 @@ $ zamatree upload './src/**/*.ts' s3
 ```
 
 &nbsp;
-![upload_screenshot](screenshots/upload.png)
+![upload_screenshot](https://raw.githubusercontent.com/ouziel-slama/zamatree/master/screenshots/upload.png)
 &nbsp;
 
 ## List uploaded files
@@ -114,7 +133,7 @@ $ zamatree blocks
 ```
 
 &nbsp;
-![lists_screenshot](screenshots/lists.png)
+![lists_screenshot](https://raw.githubusercontent.com/ouziel-slama/zamatree/master/screenshots/lists.png)
 &nbsp;
 
 ## Download a file
@@ -138,7 +157,7 @@ $ zamatree download 947aeb49 5
 ```
 
 &nbsp;
-![download_screenshot](screenshots/download.png)
+![download_screenshot](https://raw.githubusercontent.com/ouziel-slama/zamatree/master/screenshots/download.png)
 &nbsp;
 
 # Implementation
@@ -150,13 +169,13 @@ To ensure maximum compatibility with existing cloud services, Zamatree is design
 Before being uploaded to a server, the file is packaged in a tar.gz archive, accompanied by a `properties.json` file which contains the Merkle proof.
 
 &nbsp;
-![properties_screenshot](screenshots/properties.png)
+![properties_screenshot](https://raw.githubusercontent.com/ouziel-slama/zamatree/master/screenshots/properties.png)
 &nbsp;
 
 Zamatree keeps Merkle's root hash in a file `~/.zamatree/blocks/<blockShortHash>.json` and uses it when downloading a file to check Markle's proof of the `properties.json` file.
 
 &nbsp;
-![block_screenshot](screenshots/block.png)
+![block_screenshot](https://raw.githubusercontent.com/ouziel-slama/zamatree/master/screenshots/block.png)
 &nbsp;
 
 ## Code organization
