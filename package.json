@@ -1,6 +1,6 @@
 {
   "name": "zamatree",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Zamatree is a command line utility for uploading and downloading files with integrity checking using a Merkle tree.",
   "keywords": ["Merkle Tree", "File Storage", "S3", "scp"],
   "main": "index.js",
