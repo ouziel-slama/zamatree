@@ -28,5 +28,4 @@ if (!fs.existsSync(serversFile)) {
 }
 
 export const MAX_FILE_SIZE = 1024 * 1024 // 1MB ("potentially small files")
-export const MAX_FILES_BY_BLOCK = 64;
 export const SERVERS = JSON.parse(fs.readFileSync(serversFile).toString());
