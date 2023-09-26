@@ -4,6 +4,8 @@ Zamatree is a command line utility for uploading and downloading files with inte
 
 Zamatree is completely “server agnostic” and does not require any special installation on the server as long as it is possible to upload and download files. Zamatree currently supports SSH servers (via `scp`) and Amazon `S3`, but the code is structured so that you can easily add other server types like Google Cloud or Azure for example.
 
+Given the verification with a Merkle tree, the files can only be sent in packets of two minimum. The set of files sent at the same time with the `zamatree upload` command is called a block. Each block is uniquely identified with the Merkle root generated with the files it contains.
+
 - [Installation](#installation)
     - [Requirement](#requirement)
     - [Quickstart](#quickstart)
@@ -182,7 +184,8 @@ Zamatree keeps Merkle's root hash in a file `~/.zamatree/blocks/<blockShortHash>
 
 The two most important modules are `src/merkle.ts` and `src/filesblock.ts`.
 
-- `src/merkle.ts`: implementation of the Merkle tree. The code can be optimized to obtain better performance but given the relatively small number of nodes I preferred to prioritize readability. For nodes that have no brothers (on levels with an odd number of nodes), I use the same method as Bitcoin core by concatenating the hash with itself.
+- `src/merkle.ts`: implementation of the Merkle tree. For nodes that have no brothers (on levels with an odd number of nodes), I use the same method as Bitcoin core by concatenating the hash with itself.
+Given that we generate all the proofs at the same time as the root, the code could be optimized to only go through the Merkle tree once and never recalculate the same hash but I preferred to prioritize readability for this challenge.
 This module exposes 3 functions: `getMerkleProof`, `getMerkleRoot`, `verifyProof`.
 
 - `src/fileblocks.ts`: this module is responsible for preparing the files before uploading them and also for checking the files after downloading them. It is this module which generates a json file per block (kept on the client) as well as a json file per file containing the proof of Merkle (uploaded with the file). This module exposes 5 functions: `uploadBlock`, `downloadFile`, `listAllFiles`, `listFiles`, `listBlocks`.
@@ -205,13 +208,14 @@ For the rest, the names of functions and variables must be clear enough and the 
 
 # Short-comings and Todos
 
-1. Use Rust. I'm currently working with Typescript, so it was the fastest language for this challenge.
+1. Use Rust or Go to develop a library that can be easily integrated into other projects. I'm currently working with Typescript, so it was the fastest language for this challenge.
 2. better error handling and more tests.
-3. Support more storages (Google Cloud, Azure, etc.).
-4. Support folders with more than 64 files (by separating them into several blocks).
-5. Develop a pool system: before being uploaded, files are placed in a pool, and uploaded when the pool is full or a timeout has passed.
+3. Retry and resume commands for failed upload.
+4. Support more storages like Webdav, HTTPS and other cloud services than S3.
+5. Command to add file in a block (needs to download, update and upload some of the proofs).
 6. GUI. With a local web server and an HTML/JS interface.
 7. Give the possibility of storing files from the same blocks on several different servers. To distribute or double the storage.
 8. Support large files, by splitting them into several small files.
 9. Make a backup of root hashes with `zamatree upload`.
 10. Add a command to add/edit/delete a server without editing the json file.
+...
