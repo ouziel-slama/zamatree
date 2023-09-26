@@ -1,7 +1,8 @@
 {
   "name": "zamatree",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.1",
+  "description": "Zamatree is a command line utility for uploading and downloading files with integrity checking using a Merkle tree.",
+  "keywords": ["Merkle Tree", "File Storage", "S3", "scp"],
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -13,10 +14,18 @@
   },
   "author": "Ouziel Slama",
   "license": "ISC",
+  "homepage": "https://github.com/ouziel-slama/zamatree",
+  "bugs": {
+    "url": "https://github.com/ouziel-slama/zamatree/issues",
+    "email": "ouziel@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ouziel-slama/zamatree.git"
+  },
   "devDependencies": {
     "@types/node": "^20.6.3",
     "jest": "^29.7.0",
-    "rewire": "^7.0.0",
     "typescript": "^5.2.2"
   },
   "dependencies": {
