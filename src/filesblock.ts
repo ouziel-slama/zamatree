@@ -8,7 +8,7 @@ import { globSync } from 'glob'
 
 import { hashValue } from './utils.js';
 import { getMerkleProof, getMerkleRoot, verifyProof } from './merkle.js';
-import { MAX_FILES_BY_BLOCK, MAX_FILE_SIZE, SERVERS } from './config.js';
+import { MAX_FILE_SIZE, SERVERS } from './config.js';
 import scp from './storages/scp.js';
 import s3 from './storages/s3.js';
 
@@ -46,9 +46,6 @@ const generateBlockProperties = (globPattern: string) => {
     if (files.length < 2) throw new Error('Less than 2 files found: ' + globPattern);
     const hashes = files.map(file => file.hash);
     files = files.map((file, index) => injectProof(file, index, hashes));
-    if (files.length > MAX_FILES_BY_BLOCK) {
-        throw new Error('Too many files, max. ' + MAX_FILES_BY_BLOCK + ': ' + files.length)
-    };
     return {
         root: getMerkleRoot(hashes),
         path: globPattern,
