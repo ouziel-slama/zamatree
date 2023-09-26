@@ -13,7 +13,7 @@
     "zamatree": "./build/cli.js"
   },
   "author": "Ouziel Slama",
-  "license": "ISC",
+  "license": "GPLv3",
   "homepage": "https://github.com/ouziel-slama/zamatree",
   "bugs": {
     "url": "https://github.com/ouziel-slama/zamatree/issues",
